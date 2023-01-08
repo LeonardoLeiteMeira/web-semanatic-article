@@ -107,7 +107,7 @@ The next query is intended to return all people connected to someone else's soci
     }
 \end{verbatim}
 
-The following query looks for the first-level connections for a relationship type.
+The following query looks for the first-level connections for a relationship type and return has recommendations.
 
 \begin{verbatim}
     SELECT DISTINCT ?recommends
@@ -125,17 +125,6 @@ The following query looks for the first-level connections for a relationship typ
     }
 \end{verbatim}
 
-% The following query performs an in-depth search using the plugion APOC \cite{apoc} available in the Neo4J system. In the first line, the social network with “Name” defined as “Instagram” of the person “Alice“ is selected. In the second line, the search for node S (Alice's Instagram) begins, then the search for vertices is performed, with a maximum depth of 5. The result of this query are the suggestions of possible new connections of a personal nature that can be made .
-
-% \begin{verbatim}
-% match (p:Person{Name:"Alice"})-[]-(s:SocialMedia{Name:"Instagram"})
-% call apoc.path.spanningTree(s,{relationshipFilter: "PERSONAL",minLevel:0,maxLevel: 5})
-% YIELD path
-% RETURN path, p;
-% \end{verbatim}
-
-% For other types of recommendations just replace the "relationshipFilter" property to "INFLUENCE", to have influence recommendations, to "PROFESSIONAL\_RELATIONSHIP" to have professional connection recommendations, or "CONTENTS" to have content recommendations.
-
 
 The following query is intended to return the influence score that a given person has.
 
@@ -149,16 +138,6 @@ The following query is intended to return the influence score that a given perso
     }GROUP BY ?id
 \end{verbatim}
 
-
-% This last query aims to identify someone's level of influence within a network. In the first line, the social networks of a person are selected to be evaluated for influence. In the second line, all the social networks of a network that must be evaluated, which are influenced are selected, and finally it is defined which network the level of influence is being evaluated, in this case a social network with the property "Username" with the value " LauraInstagram”.
-% \begin{verbatim}
-% match(person:Person {Name: "Leonardo"})-[HAS]->(socialMedia:SocialMedia)
-% match(socialMedia)<-[f:INFLUENCE]-(socialMediaInOtherSubGraph:SocialMedia)
-% match(socialMediaInOtherSubGraph:SocialMedia)-
-%     []-(subGraph:SocialMedia{Username:"LauraInstagram"})
-
-% return count(f)
-% \end{verbatim}
 
 \section{API}
 To use the system \cite{MetaSocialMediaAPI}, it is necessary to create an access, and log in to the platform. In this way, it is possible to have access to endpoints that return recommendations and level of influence. Existing endpoints are:
