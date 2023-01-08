@@ -35,8 +35,6 @@ One instance of the “Person” entity have the following attributes:
 
 \begin{itemize}
 \item Identifier: A single identifier to that user
-\item Name: User’s first name
-\item Surname: User’s last name
 \item Email
 \item Initial date: Date the user signup into the system
 \item Updated date: Update date of the information in the system
@@ -91,19 +89,20 @@ The querie below returns the social media of a given person.
 \end{verbatim}
 
 
-The next query is intended to return all people connected to someone else's social networks.
+The next query is intended to return all people connected to someone else's social networks. In this example is filtered by type "Personal".
 
 \begin{verbatim}
-    SELECT DISTINCT ?email ?id ?idConnection ?connectionEmail
+    SELECT DISTINCT ?email ?id ?idConnection ?connectionEmail ?type
     WHERE {
-     ?subject rdf:type :User;
-              :email ?email ;
-              :id ?id ;
-              :HasRelationship ?relations .
-      ?relations :With ?connection .
-      ?connection :id ?idConnection ;
-                  :email ?connectionEmail
-      FILTER (?id = 1)
+    ?subject rdf:type :User;
+            :email ?email ;
+            :id ?id ;
+            :HasRelationship ?relations .
+    ?relations :With ?connection .
+    ?relations rdf:type ?type .
+    ?connection :id ?idConnection ;
+                :email ?connectionEmail
+    FILTER (?id = 1 && ?type = :Personal)
     }
 \end{verbatim}
 
