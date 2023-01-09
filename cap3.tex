@@ -79,12 +79,12 @@ The querie below returns the social media of a given person.
 \begin{verbatim}
     SELECT ?socialName
     WHERE {
-     ?subject rdf:type :User;
-              :email ?name ;
-              :id ?id ;
-              :IsOwnerOf ?social .
-      ?social :name ?socialName
-      FILTER (?id = 2)
+    ?subject rdf:type :User;
+            :email ?name ;
+            :id ?id ;
+            :IsOwnerOf ?social .
+    ?social :name ?socialName
+    FILTER (?id = 2)
     }
 \end{verbatim}
 
@@ -109,18 +109,27 @@ The next query is intended to return all people connected to someone else's soci
 The following query looks for the first-level connections for a relationship type and return has recommendations.
 
 \begin{verbatim}
-    SELECT DISTINCT ?recommends
-    WHERE {
-     ?subject rdf:type my:Person;
-              my:PersonID ?id ;
-              my:HAS	?social;
-             OPTIONAL {
-                ?type rdfs:subPropertyOf* my:RELATIONSHIP .
-                ?social ?type ?conections .
-                ?social	?type ?recommends .
-                FILTER NOT EXISTS {?recommends ?type ?social}
-              } 
-      FILTER ( ?id = 1 && !isBlank(?recommends) )s
+    SELECT DISTINCT ?email ?id ?userId ?connectionEmail ?socialMediaName
+    WHERE { 
+    ?user rdf:type :User ;
+        :email ?email ;
+        :id ?id ;
+        :HasRelationship ?relations .
+    ?user :IsOwnerOf ?medias .
+    ?relations :With ?Users ;
+                :ConnectedOn ?socialMedia .
+    ?Users :email ?connectionEmail.
+    ?Users :id ?userId .
+    OPTIONAL {
+        ?Users :HasRelationship ?UsersRelations .
+        ?UsersRelations :With ?UserUsers ;
+                :ConnectedOn ?UserSocialMedia .
+        ?UserUsers :IsOwnerOf ?UserMedias .
+        ?UserUsers :email ?UserEmail .
+        ?UserMedias :name ?socialMediaName
+        FILTER(?UserMedias = ?medias && ?UserUsers != ?user)
+    }
+    FILTER(?id = 1  && !isBlank(?UserMedias))
     }
 \end{verbatim}
 
@@ -130,10 +139,10 @@ The following query is intended to return the influence score that a given perso
 \begin{verbatim}
     SELECT (count ( distinct ?relations ) AS ?level)
     WHERE {
-       ?relations rdf:type :Influence .
-       ?relations :With ?user .
-       ?user :id ?id .
-       FILTER (?id = 4)
+        ?relations rdf:type :Influence .
+        ?relations :With ?user .
+        ?user :id ?id .
+        FILTER (?id = 4)
     }GROUP BY ?id
 \end{verbatim}
 
